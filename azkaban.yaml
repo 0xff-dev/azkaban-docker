@@ -1,0 +1,225 @@
+apiVersion: v1
+data:
+  azkaban.properties: |
+    # Azkaban Personalization Settings
+    azkaban.name=Test
+    azkaban.label=My Local Azkaban
+    azkaban.color=#FF3601
+    azkaban.default.servlet.path=/index
+    web.resource.dir=web/
+    default.timezone.id=America/Los_Angeles
+    # Azkaban UserManager class
+    user.manager.class=azkaban.user.XmlUserManager
+    user.manager.xml.file=conf/azkaban-users.xml
+    # Loader for projects
+    executor.global.properties=conf/global.properties
+    azkaban.project.dir=projects
+    # Velocity dev mode
+    velocity.dev.mode=false
+    # Azkaban Jetty server properties.
+    jetty.use.ssl=false
+    jetty.maxThreads=25
+    jetty.port=8081
+    # Where the Azkaban web server is located
+    azkaban.webserver.url=http://localhost:8081
+    # mail settings
+    mail.sender=
+    mail.host=
+    # User facing web server configurations used to construct the user facing server URLs. They are useful when there is a reverse proxy between Azkaban web servers and users.
+    # enduser -> myazkabanhost:443 -> proxy -> localhost:8081
+    # when this parameters set then these parameters are used to generate email links.
+    # if these parameters are not set then jetty.hostname, and jetty.port(if ssl configured jetty.ssl.port) are used.
+    # azkaban.webserver.external_hostname=myazkabanhost.com
+    # azkaban.webserver.external_ssl_port=443
+    # azkaban.webserver.external_port=8081
+    job.failure.email=
+    job.success.email=
+    lockdown.create.projects=false
+    cache.directory=cache
+    # JMX stats
+    jetty.connector.stats=true
+    executor.connector.stats=true
+    # Azkaban plugin settings
+    azkaban.jobtype.plugin.dir=plugins/jobtypes
+    # Azkaban mysql settings by default. Users should configure their own username and password.
+    database.type=mysql
+    mysql.port=3306
+    mysql.host=192.168.1.9
+    mysql.database=azkaban
+    mysql.user=root
+    mysql.password=111111
+    mysql.numconnections=100
+    # Azkaban Executor settings
+    executor.maxThreads=50
+    executor.flow.threads=30
+  global.properties: ""
+  log4j.properties: |
+    log4j.rootLogger=INFO, Console
+    log4j.logger.azkaban=INFO, server
+    log4j.appender.server=org.apache.log4j.RollingFileAppender
+    log4j.appender.server.layout=org.apache.log4j.PatternLayout
+    log4j.appender.server.File=logs/azkaban-execserver.log
+    log4j.appender.server.layout.ConversionPattern=%d{yyyy/MM/dd HH:mm:ss.SSS Z} %5p [%c{1}] [%t] [Azkaban] %m%n
+    log4j.appender.server.MaxFileSize=102400MB
+    log4j.appender.server.MaxBackupIndex=2
+    log4j.appender.Console=org.apache.log4j.ConsoleAppender
+    log4j.appender.Console.layout=org.apache.log4j.PatternLayout
+    log4j.appender.Console.layout.ConversionPattern=%d{yyyy/MM/dd HH:mm:ss.SSS Z} %5p [%c{1}] [%t] [Azkaban] %m%n
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: azkaban-exec-server-cm 
+  namespace: kube-system
+
+---
+apiVersion: v1
+data:
+  azkaban-users.xml: |
+    <azkaban-users>
+      <user groups="azkaban" password="azkaban" roles="admin" username="azkaban"/>
+      <user password="metrics" roles="metrics" username="metrics"/>
+
+      <role name="admin" permissions="ADMIN"/>
+      <role name="metrics" permissions="METRICS"/>
+    </azkaban-users>
+  azkaban.properties: |
+    # Azkaban Personalization Settings
+    azkaban.name=Test
+    azkaban.label=My Local Azkaban
+    azkaban.color=#FF3601
+    azkaban.default.servlet.path=/index
+    web.resource.dir=web/
+    default.timezone.id=America/Los_Angeles
+    # Azkaban UserManager class
+    user.manager.class=azkaban.user.XmlUserManager
+    user.manager.xml.file=conf/azkaban-users.xml
+    # Loader for projects
+    executor.global.properties=conf/global.properties
+    azkaban.project.dir=projects
+    # Velocity dev mode
+    velocity.dev.mode=false
+    # Azkaban Jetty server properties.
+    jetty.use.ssl=false
+    jetty.maxThreads=25
+    jetty.port=8081
+    # Azkaban Executor settings
+    # mail settings
+    mail.sender=
+    mail.host=
+    # User facing web server configurations used to construct the user facing server URLs. They are useful when there is a reverse proxy between Azkaban web servers and users.
+    # enduser -> myazkabanhost:443 -> proxy -> localhost:8081
+    # when this parameters set then these parameters are used to generate email links.
+    # if these parameters are not set then jetty.hostname, and jetty.port(if ssl configured jetty.ssl.port) are used.
+    # azkaban.webserver.external_hostname=myazkabanhost.com
+    # azkaban.webserver.external_ssl_port=443
+    # azkaban.webserver.external_port=8081
+    job.failure.email=
+    job.success.email=
+    lockdown.create.projects=false
+    cache.directory=cache
+    # JMX stats
+    jetty.connector.stats=true
+    executor.connector.stats=true
+    # Azkaban mysql settings by default. Users should configure their own username and password.
+    database.type=mysql
+    mysql.port=3306
+    mysql.host=192.168.1.9
+    mysql.database=azkaban
+    mysql.user=root
+    mysql.password=111111
+    mysql.numconnections=100
+    #Multiple Executor
+    azkaban.use.multiple.executors=true
+    azkaban.executorselector.filters=StaticRemainingFlowSize,MinimumFreeMemory,CpuStatus
+    azkaban.executorselector.comparator.NumberOfAssignedFlowComparator=1
+    azkaban.executorselector.comparator.Memory=1
+    azkaban.executorselector.comparator.LastDispatched=1
+    azkaban.executorselector.comparator.CpuUsage=1
+  global.properties: ""
+  log4j.properties: |
+    log4j.rootLogger=INFO, Console
+    log4j.logger.azkaban=INFO, server
+    log4j.appender.server=org.apache.log4j.RollingFileAppender
+    log4j.appender.server.layout=org.apache.log4j.PatternLayout
+    log4j.appender.server.File=logs/azkaban-webserver.log
+    log4j.appender.server.layout.ConversionPattern=%d{yyyy/MM/dd HH:mm:ss.SSS Z} %5p [%c{1}] [%t] [Azkaban] %m%n
+    log4j.appender.server.MaxFileSize=102400MB
+    log4j.appender.server.MaxBackupIndex=2
+    log4j.appender.Console=org.apache.log4j.ConsoleAppender
+    log4j.appender.Console.layout=org.apache.log4j.PatternLayout
+    log4j.appender.Console.layout.ConversionPattern=%d{yyyy/MM/dd HH:mm:ss.SSS Z} %5p [%c{1}] [%t] [Azkaban] %m%n
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: azkaban-web-server-cm
+  namespace: kube-system
+
+---
+# for depllyment web and exec
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: azkaban-exec-server
+  namespace: kube-system
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: azkaban-exec-server
+  template:
+    metadata:
+      labels:
+        app: azkaban-exec-server
+    spec:
+      containers:
+      - image: 192.168.0.71/system_containers/azkaban-exec-server:jre-centos
+        name: azkaben-exec-server
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: azkaban-exec-server-cm
+          mountPath: /azkaban-exec-server-0.1.0-SNAPSHOT/conf
+      volumes:
+      - name: azkaban-exec-server-cm
+        configMap:
+          name: azkaban-exec-server-cm
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: azkaban-web-server
+  namespace: kube-system
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: azkaban-web-server
+  template:
+    metadata:
+      labels:
+        app: azkaban-web-server
+    spec:
+      containers:
+      - image: 192.168.0.71/system_containers/azkaban-web-server:jre-centos
+        name: azkaben-web-server
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: azkaban-web-server-cm
+          mountPath: /azkaban-web-server-0.1.0-SNAPSHOT/conf
+      volumes:
+      - name: azkaban-web-server-cm
+        configMap:
+          name: azkaban-web-server-cm
+
+---
+# create a svc for web-deployment
+apiVersion: v1
+kind: Service
+metadata:
+  name: azkaban-web-svc
+  namespace: kube-system
+spec:
+  ports:
+  - port: 8081
+    targetPort: 8081
+  selector:
+    app: azkaban-web-server
