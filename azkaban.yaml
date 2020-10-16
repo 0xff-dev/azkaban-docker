@@ -161,15 +161,20 @@ kind: Deployment
 metadata:
   name: azkaban-exec-server
   namespace: kube-system
+  labels:
+    app: azkaban-exec-server
+    service: datacenter
 spec:
   replicas: 2
   selector:
     matchLabels:
       app: azkaban-exec-server
+      service: datacenter
   template:
     metadata:
       labels:
         app: azkaban-exec-server
+        service: datacenter
     spec:
       containers:
       - image: 192.168.0.71/system_containers/azkaban-exec-server:jre-centos
@@ -188,15 +193,20 @@ kind: Deployment
 metadata:
   name: azkaban-web-server
   namespace: kube-system
+  labels:
+    app: azkaban-web-server
+    service: datacenter
 spec:
   replicas: 2
   selector:
     matchLabels:
       app: azkaban-web-server
+      service: datacenter
   template:
     metadata:
       labels:
         app: azkaban-web-server
+        service: datacenter
     spec:
       containers:
       - image: 192.168.0.71/system_containers/azkaban-web-server:jre-centos
@@ -223,3 +233,4 @@ spec:
     targetPort: 8081
   selector:
     app: azkaban-web-server
+    service: datacenter
