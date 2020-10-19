@@ -180,6 +180,13 @@ spec:
       - image: 192.168.0.71/system_containers/azkaban-exec-server:jre-centos
         name: azkaben-exec-server
         imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "6Gi"
+            cpu: "3"
+          limits:
+            memory: "6Gi"
+            cpu: "3"
         volumeMounts:
         - name: azkaban-exec-server-cm
           mountPath: /azkaban-exec-server-0.1.0-SNAPSHOT/conf
@@ -212,6 +219,13 @@ spec:
       - image: 192.168.0.71/system_containers/azkaban-web-server:jre-centos
         name: azkaben-web-server
         imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "1"
+          limits:
+            memory: "2Gi"
+            cpu: "1"
         volumeMounts:
         - name: azkaban-web-server-cm
           mountPath: /azkaban-web-server-0.1.0-SNAPSHOT/conf
@@ -227,6 +241,8 @@ kind: Service
 metadata:
   name: azkaban-web-svc
   namespace: kube-system
+  labels:
+    service: datacenter
 spec:
   ports:
   - port: 8081
